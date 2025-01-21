@@ -21,12 +21,12 @@ public class Turret : MonoBehaviour
         // Calculate direction and distance to the player
         Vector2 directionToPlayer = player.position - transform.position;
         float distanceToPlayer = directionToPlayer.magnitude;
+        // Rotate the turret to face the player
+        RotateTowardsPlayer(directionToPlayer);
 
         // Check if the player is within range
         if (distanceToPlayer <= range)
         {
-            // Rotate the turret to face the player
-            RotateTowardsPlayer(directionToPlayer);
 
             // Check if the player is within the firing angle
             float angleToPlayer = Vector2.Angle(transform.right, directionToPlayer.normalized);
@@ -44,13 +44,16 @@ public class Turret : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
-    private void FireProjectile(Vector2 direction)
+    private void FireProjectile(Vector3 targetPosition)
     {
+        // Calculate the direction to the player or target
+        Vector3 direction = (targetPosition - firePoint.position).normalized;
+
+        // Instantiate the projectile at the fire point
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-        Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            rb.linearVelocity = direction * projectileSpeed;
-        }
+
+        // Set the direction of the projectile
+        projectile.GetComponent<Projectile>().SetDirection(direction);
     }
 }
+
