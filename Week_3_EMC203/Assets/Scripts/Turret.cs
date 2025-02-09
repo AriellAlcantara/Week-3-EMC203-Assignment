@@ -1,34 +1,27 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Turret : MonoBehaviour
 {
-    public Transform player; // The player the turret will target
-    public GameObject projectilePrefab; // Projectile prefab
-    public Transform firePoint; // The point from where projectiles are fired
-    public float range = 5f; // Detection range of the turret
-    public float firingAngleThreshold = 10f; // Angle within which the turret can fire
-    public float cooldown = 2f; // Cooldown time between shots
-    public float projectileSpeed = 5f; // Speed of the projectile
-    public float restartDistance = 0.5f; // Distance to player at which the scene restarts
-
+    public Transform player;
+    public GameObject projectilePrefab;
+    public Transform firePoint;
+    public float range = 5f;
+    public float firingAngleThreshold = 10f;
+    public float cooldown = 2f;
+    public float projectileSpeed = 5f;
     private float lastFireTime = 0f;
 
     void Update()
     {
         if (player == null) return;
 
-        // Calculate direction and distance to the player
         Vector2 directionToPlayer = player.position - transform.position;
         float distanceToPlayer = directionToPlayer.magnitude;
-        // Rotate the turret to face the player
+
         RotateTowardsPlayer(directionToPlayer);
 
-        // Check if the player is within range
         if (distanceToPlayer <= range)
         {
-
-            // Check if the player is within the firing angle
             float angleToPlayer = Vector2.Angle(transform.right, directionToPlayer.normalized);
             if (angleToPlayer <= firingAngleThreshold && Time.time >= lastFireTime + cooldown)
             {
@@ -44,16 +37,9 @@ public class Turret : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
-    private void FireProjectile(Vector3 targetPosition)
+    private void FireProjectile(Vector3 direction)
     {
-        // Calculate the direction to the player or target
-        Vector3 direction = (targetPosition - firePoint.position).normalized;
-
-        // Instantiate the projectile at the fire point
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-
-        // Set the direction of the projectile
         projectile.GetComponent<Projectile>().SetDirection(direction);
     }
 }
-
